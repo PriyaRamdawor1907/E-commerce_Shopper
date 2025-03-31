@@ -199,6 +199,14 @@ app.post('/login', async (req,res)=>{
 	}
 })
 
+//API endpoint for new collection data
+app.get('/newcollections', async (req,res) =>{
+	let products = await Product.find({});
+	let newCollections = products.slice(1).slice(-8)
+	console.log("New collections fetched")
+	res.send(newCollections)
+})
+
 //start express server
 app.listen(port, (error)=>{
 	if(!error){
