@@ -1,5 +1,5 @@
 import Navbar from "./components/navbar/navbar"
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom"
 import Shop from './pages/Shop'
 import ShopCategory from './pages/ShopCategory'
 import Product from './pages/Product'
@@ -11,10 +11,13 @@ import women_banner from './components/assets/banner_women.png'
 import kid_banner from './components/assets/banner_kids.png'
 
 function App() {
+
+  const location = useLocation();
+  const hideHeaderFooter = location.pathname === "/login"
+
   return (
     <div>
-      <BrowserRouter>
-        <Navbar/>
+      {!hideHeaderFooter && <Navbar/>}        
         <Routes>
           <Route path="/" element= {<Shop/>}/>
           <Route path="/Mens" element= {<ShopCategory banner={men_banner} category = "men"/>}/>
@@ -26,9 +29,7 @@ function App() {
           <Route path="/cart" element={<Cart/>}/>
           <Route path="/login" element={<LoginSignup/>}/>
         </Routes>
-        <Footer/>
-      </BrowserRouter>
-      
+        {!hideHeaderFooter && <Footer/>}      
     </div>
   )
 }
