@@ -216,6 +216,15 @@ app.get('/popularinwomen', async(req,res)=>{
 	res.send(popular_in_women)
 })
 
+//API endpoint for related products
+app.get('/relatedproducts/:category', async(req,res)=>{
+	let category = req.params.category
+	let products = await Product.find({category:category})
+	let relatedProducts = products.slice(0,4)
+	console.log("Related products fetched")
+	res.send(relatedProducts)
+})
+
 //Middleware to fetch user
 const fetchUser = async (req,res,next)=>{
 	const token = req.header('auth-token')
