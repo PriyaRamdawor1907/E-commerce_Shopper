@@ -13,12 +13,14 @@ const Product = () => {
   const {productId} = useParams();
   const product = all_products.find((e)=> e.id === Number(productId))
 
+  const category = product?.category
+
   return (
     <div>
       <Breadcrum product={product}/>
       <ProductDisplay product={product}/>
       <DescriptionBox/>
-      <RelatedProducts/>
+      <RelatedProducts category={category}/>
     </div>
   )
 }
