@@ -8,6 +8,7 @@ const path = require("path");
 const cors = require("cors");
 const { type } = require("os");
 const { error } = require("console");
+const { send } = require("process");
 
 app.use(express.json());
 app.use(cors());
@@ -15,7 +16,7 @@ app.use(cors());
 //DB connection with mongoDb
 mongoose.connect("mongodb+srv://RamdaworPriya:vVfsbTuYmDo0uIge@cluster0.fxjbmuy.mongodb.net/e-commerce")
 .then(()=> console.log ("MongoDb Connected Sucessfully"))
-.catch((error)=> console.error("MongoDb cinnection failed"))
+.catch((error)=> console.error("MongoDb connection failed"))
 
 //API creation
 app.get("/", (req,res)=>{
@@ -205,6 +206,57 @@ app.get('/newcollections', async (req,res) =>{
 	let newCollections = products.slice(1).slice(-8)
 	console.log("New collections fetched")
 	res.send(newCollections)
+})
+
+//API endpoint for Popular category
+app.get('/popularinwomen', async(req,res)=>{
+	let products = await Product.find({category:"women"})
+	let popular_in_women = products.slice(0,4)
+	console.log("Popular in women fetched")
+	res.send(popular_in_women)
+})
+
+//Middleware to fetch user
+const fetchUser = async (req,res,next)=>{
+	const token = req.header('auth-token')
+	if (!token){
+		res.status(401).send({errors:"Please authenticate using a valid token"})
+	}
+	else{
+		try{
+			const data = jwt.verify(token,'secret_ecom')
+			req.user = data.user
+			next()
+		}catch(error){
+			res.status(401),send({errors:"Please authenticate using a valid token"})
+		}
+	}
+}
+
+//API endpoint for cartData (add)
+app.post('/addtocart',fetchUser, async(req,res)=>{
+	console.log("added ", req.body.itemId)
+	let userData = await Users.findOne({_id:req.user.id}) //fetch user from db
+	userData.cartData[req.body.itemId]  += 1
+	await Users.findOneAndUpdate({_id:req.user.id}, {cartData:userData.cartData}) //find user and update specific item qty
+	res.json({ success: true, cartData: userData.cartData });
+})
+
+//API endpoint for cartData (remove)
+app.post('/removefromcart',fetchUser, async(req,res)=>{
+	console.log("removed ", req.body.itemId)
+	let userData = await Users.findOne({_id:req.user.id}) //fetch user from db
+	if(userData.cartData[req.body.itemId] >0)
+		userData.cartData[req.body.itemId]  -= 1
+		await Users.findOneAndUpdate({_id:req.user.id}, {cartData:userData.cartData}) //find user and update specific item qty
+		res.json({ success: true, cartData: userData.cartData });
+})
+
+//API endpoint to fetch cartData
+app.post('/getcart', fetchUser, async(req,res)=>{
+	console.log("GetCart")
+	let userData = await Users.findOne({_id:req.user.id})
+	res.json(userData.cartData)
 })
 
 //start express server
