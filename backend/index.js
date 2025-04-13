@@ -1,3 +1,4 @@
+require('dotenv').config();
 const port = 4000;
 const express = require("express") 
 const app = express(); 
@@ -10,11 +11,12 @@ const { type } = require("os");
 const { error } = require("console");
 const { send } = require("process");
 
+
 app.use(express.json());
 app.use(cors());
 
 //DB connection with mongoDb
-mongoose.connect("mongodb+srv://RamdaworPriya:vVfsbTuYmDo0uIge@cluster0.fxjbmuy.mongodb.net/e-commerce")
+mongoose.connect(process.env.MONGODB_URI)
 .then(()=> console.log ("MongoDb Connected Sucessfully"))
 .catch((error)=> console.error("MongoDb connection failed"))
 
