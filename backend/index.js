@@ -174,7 +174,7 @@ app.post('/signup', async (req,res)=>{
 		}
 	}
 
-	const token = jwt.sign(data, 'secret_ecom')
+	const token = jwt.sign(data, process.env.SECRET_KEY)
 	res.json({success:true, token})
 })
 
@@ -190,7 +190,7 @@ app.post('/login', async (req,res)=>{
 				}
 			}
 
-			const token = jwt.sign(data, 'secret_ecom')
+			const token = jwt.sign(data, process.env.SECRET_KEY)
 			res.json({success:true, token})
 		}
 		else{
@@ -235,7 +235,7 @@ const fetchUser = async (req,res,next)=>{
 	}
 	else{
 		try{
-			const data = jwt.verify(token,'secret_ecom')
+			const data = jwt.verify(token,process.env.SECRET_KEY)
 			req.user = data.user
 			next()
 		}catch(error){
